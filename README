@@ -1,3 +1,5 @@
+<html>
+<body>
 <h2>jQuery LiveEdit Plugin - An alternative visual editor</h2>
 
 <p>jquery.liveedit is intended to be a simpler alternative to WYSIWYG editors. LiveEdit converts textareas into editable markup suitable for inline editing.</p>
@@ -30,3 +32,5 @@
 
     As updates are made to the live edit document, these changes will be reflected in the markup inside your hidden textarea and any form posts should work as usual.
 </pre>
+</body>
+</html>
