@@ -4,17 +4,17 @@
     var methods = {
 
 
-		init: function( options ) {
+        init: function( options ) {
 
             var settings = {
                 'hidetextarea' : true
             }
 
-			return this.each( function() {
+            return this.each( function() {
 
-				if ( this.type != 'textarea' ) {
-					return false;
-				}
+                if ( this.type != 'textarea' ) {
+                    return false;
+                }
                 
                 if ( options ) { 
                     jQuery.extend( settings, options );
@@ -23,9 +23,9 @@
 
 
 
-				var $textarea = jQuery(this);
-				var $editarea = jQuery('<div/>').addClass('editable_content').html( $textarea.val() );
-			
+                var $textarea = jQuery(this);
+                var $editarea = jQuery('<div/>').addClass('editable_content').html( $textarea.val() );
+            
                 jQuery(this).data('liveedit', {
                     target: $textarea,
                     editarea: $editarea,
@@ -41,20 +41,20 @@
                 var editingChild = false;
 
 
-				if ( settings['hidetextarea'] ) {
+                if ( settings['hidetextarea'] ) {
                     $textarea.css('display', 'none');
-				}
+                }
                 $editarea.insertAfter( $textarea );
 
-				initialize();
+                initialize();
 
 
 
                 function bindElement( elem ) {
-						var tagname = elem.get(0).tagName;
-						switch( tagname ) {
-							case 'P':
-								bindTextTag( elem );
+                        var tagname = elem.get(0).tagName;
+                        switch( tagname ) {
+                            case 'P':
+                                bindTextTag( elem );
                                 elem.children('IMG').each( function() {
                                     bindImgTag( this );
                                 });
@@ -80,12 +80,12 @@
 
                 }
 
-				function initialize() {
+                function initialize() {
 
-					$editarea.children().each( function() {
+                    $editarea.children().each( function() {
                         var $this = jQuery(this);
                         bindElement( $this );
-                    });			
+                    });         
 
 
 
@@ -183,7 +183,7 @@
                     }); 
 
 
-				} //end initialize
+                } //end initialize
 
 
 
@@ -584,11 +584,11 @@
                 }
 
 
-			}); //end each returned liveeditor
+            }); //end each returned liveeditor
 
 
 
-		},  //end liveedit init
+        },  //end liveedit init
 
 
         addtools: function( options ) {
