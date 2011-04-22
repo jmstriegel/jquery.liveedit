@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+<script src="assets/js/jquery.liveedit.js?v1"></script>
+<link rel="stylesheet" href="assets/css/demo.css">
+<link rel="stylesheet" href="assets/css/liveedit.css">
+<script>
+    $(document).ready(function($){
+        $('.editme').liveedit({'hidetextarea':true});
+        $('#editor1').liveedit('addtools', {'target':'#edittools1', 'enable': ['h1','h2','p','img','a']});
+    });
+</script>
+</head>
+<body>
+
+<article>
+<div class="column">
+
+<div id="edittools1"></div>
+
+<textarea id="editor1" rows="5" cols="20" class="editme">
+&lt;h1&gt;This is an h1&lt;/h1&gt;
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed posuere, justo egestas fermentum viverra, dolor lorem imperdiet diam, vel auctor diam tellus vitae nulla. Aenean ut quam vitae odio bibendum adipiscing. Aenean ut purus enim, in lacinia nisl.&lt;/p&gt;
+&lt;h2&gt;This is an h2&lt;/h2&gt;
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed posuere, justo egestas fermentum viverra, dolor lorem imperdiet diam, vel auctor diam tellus vitae nulla. Aenean ut quam vitae odio bibendum adipiscing. Aenean ut purus enim, in lacinia nisl.&lt;/p&gt;
+&lt;img src="assets/images/test.jpg" width="350"&gt;
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed posuere, justo egestas fermentum viverra, dolor lorem imperdiet diam, vel auctor diam tellus vitae nulla. Aenean ut quam vitae odio bibendum adipiscing. Aenean ut purus enim, in lacinia nisl.&lt;/p&gt;
+</textarea>
+
+
+</div>
+
+</article>
+</body>
+</html>

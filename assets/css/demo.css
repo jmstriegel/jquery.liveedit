@@ -1,0 +1,49 @@
+html, body {
+	border:0;
+	padding:0;
+	margin:0;
+}
+
+h1,h2,h3,p,div,img {
+	border:0;
+	padding:0;
+	margin:0;
+}
+
+
+body {
+	background-color: #aaccff;
+	font-family: helvetica, sans;
+	color: #333333;
+}
+
+article {
+	display:block;
+	margin: 0 auto;
+	width: auto;
+}
+div.column {
+	margin: 50px auto;
+	width: 350px;
+	background-color: #ffffff;
+}
+
+h1 {
+	font-size: 20px;
+	font-weight: bold;
+	margin: 10px 0;
+}
+h2 {
+	font-size: 18px;
+	font-weight: bold;
+	margin: 5px 0;
+}
+h3 {
+	font-size: 14px;
+	font-weight: bold;
+	margin: 5px 0;
+}
+p {
+	font-size: 12px;
+	margin: 5px 0;
+}

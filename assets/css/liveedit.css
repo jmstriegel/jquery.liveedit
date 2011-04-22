@@ -1,0 +1,95 @@
+
+.editable_content {
+	position: relative;
+}
+
+.editable_content P, .editable_content IMG, .editable_content H2 {
+}
+
+.editable_content IMG {
+}
+
+P.edit_hover, H2.edit_hover, H1.edit_hover, H3.edit_hover, H4.edit_hover, A.edit_hover {
+	-webkit-box-shadow:  0px 0px 5px 5px rgba(0,0,0,.1);
+	-moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,.1);
+	box-shadow: 0px 0px 5px 5px rgba(0,0,0,.1);
+}
+P.currently_editing, H1.currently_editing, H2.currently_editing, H3.currently_editing, H4.currently_editing, IMG.currently_editing, A.currently_editing {
+	display:none;
+}
+
+
+IMG.edit_hover {
+	-webkit-box-shadow:  0px 0px 5px 5px rgba(0,0,0,.5);
+	-moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,.5);
+	box-shadow: 0px 0px 5px 5px rgba(0,0,0,.5);
+}
+
+.editor_active {
+	position: relative;
+	margin:0;
+	padding:0;
+	border:0;
+	outline:0;
+	-webkit-box-shadow:  0px 0px 5px 5px rgba(0,0,0,.1) inset;
+	-moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,.1) inset;
+	box-shadow: 0px 0px 5px 5px rgba(0,0,0,.1) inset;
+}
+.txt_editing {
+	border: 0;
+	margin:0;
+	padding:0;
+	background-color: transparent;
+}
+
+.txt_editing_cancel, .txt_editing_done {
+	position:absolute;
+}
+
+.problem_image {
+    border: 5px solid red;
+}
+
+.img_preview_editing {
+	position:absolute;
+	top:0px;
+	left:0px;
+	z-index:19;
+}
+.img_edit_box, .a_edit_box {
+	z-index:20;
+	position:relative;
+	-webkit-box-shadow:  0px 0px 5px 5px rgba(0,0,0,.1) inset;
+        -moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,.1) inset;
+        box-shadow: 0px 0px 5px 5px rgba(0,0,0,.1) inset;
+        background-color: rgba(255,255,255,.8);
+	padding:10px;
+    font-family: helvetica, sans-serif;
+    color: #000;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.img_edit_box a, .a_edit_box a {
+    font-family: helvetica, sans-serif;
+    color: #000;
+    font-size: 14px;
+}
+.img_width_editing, .img_height_editing {
+    width: 50px;
+    margin-right: 10px;
+}
+
+.editor_dragplaceholder {
+    display: block;
+    border: 2px solid black;
+    position: relative;
+    background-color: #fff;
+    opacity: 0.5;
+    z-index: 100;
+}
+.editor_dragging IMG, IMG.editor_dragging {
+    opacity: 0.5;
+}
+
+
