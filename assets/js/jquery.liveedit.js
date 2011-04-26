@@ -30,7 +30,7 @@
                     target: $textarea,
                     editarea: $editarea,
                     bindElement: bindElement,
-                    updateTextArea: updateTextArea,
+                    updatePreviewArea: updatePreviewArea,
                     exitEditMode: exitEditMode
                 });
 
@@ -39,6 +39,7 @@
                 var isDragging = false;
                 var overChild = false;
                 var editingChild = false;
+                var deleteHover = false;
 
 
                 if ( settings['hidetextarea'] ) {
@@ -55,10 +56,10 @@
                         switch( tagname ) {
                             case 'P':
                                 bindTextTag( elem );
-                                elem.children('IMG').each( function() {
+                                elem.find('IMG').each( function() {
                                     bindImgTag( this );
                                 });
-                                elem.children('A').each( function() {
+                                elem.find('A').each( function() {
                                     bindATag( this );
                                 });
                                 break;
@@ -72,8 +73,16 @@
                                 bindATag( elem );
                                 break;
                             case 'DIV':
-                                //bindDivTag( elem );
+                                bindRawTag( elem );
+                                elem.find('IMG').each( function() {
+                                    bindImgTag( this );
+                                });
+                                elem.find('A').each( function() {
+                                    bindATag( this );
+                                });
                                 break;
+                            case 'UL': case 'OL':
+                                bindListTag( elem );
                             default:
                                 break;
                         }
@@ -174,7 +183,7 @@
                         $editarea.children('.editor_dragplaceholder').remove();
 
                         if ( isDragging ) {
-                            updateTextArea();
+                            updatePreviewArea();
                         }
                         isDragging=false;
 
@@ -190,9 +199,9 @@
 
                 function bindTextTag( elem ) {
 
-                    elem.hover(
-                        function() { jQuery(this).addClass( 'edit_hover' ); },
-                        function() { jQuery(this).removeClass( 'edit_hover' ); }
+                    jQuery(elem).hover(
+                        function() { jQuery(this).addClass( 'edit_hover' ); addTagReference( this ); addDeleteButton( this ); },
+                        function() { jQuery(this).removeClass( 'edit_hover' ); removeTagReference( this ); removeDeleteButton( this ); }
                     );
 
                     var csscopy = [
@@ -213,7 +222,7 @@
                         'marginRight',
                         'marginBottom'];
 
-                    elem.mousedown( function() {
+                    jQuery(elem).mousedown( function() {
                         if ( editingChild || isDragging ) {
                             return true;
                         }
@@ -222,7 +231,7 @@
                         return false;
                     });
 
-                    elem.click( function() {
+                    jQuery(elem).click( function() {
                         var $this = jQuery(this);
 
                         if ( overChild || editingChild || isDragging ) {
@@ -232,6 +241,9 @@
                         if ( closeEditFunc ) {
                             closeEditFunc();
                         }
+
+                        removeDeleteButton( this );
+                        removeTagReference( this );
         
                         var editorhtml = '<div class="editor_active"><textarea class="txt_editing"></textarea></div>';
                         var editor = $this.after( editorhtml );
@@ -285,8 +297,10 @@
 
  
                 function editCompleteTextTag( elem ) {
-                    $editarea.find('.currently_editing').unbind().children('IMG').each( function() {
-                        jQuery(this).unbind();
+                    var editing = $editarea.find('.currently_editing').unbind();
+
+                    editing.find('IMG, A').each( function() {
+                            jQuery(this).unbind();
                     });
 
                     var newtxt = $editarea.find('.txt_editing').val();
@@ -306,12 +320,17 @@
                         var newp = jQuery('<' + tagname + '>' + paragraph + '</' + tagname + '>');
                         $editarea.find('.currently_editing').after( newp );
                         bindTextTag( newp );
-                        newp.children('IMG').each( function() {
+                        newp.find('IMG').each( function() {
                                 bindImgTag( this );
                         });
-                        newp.children('A').each( function() {
+                        newp.find('A').each( function() {
                                 bindATag( this );
                         });
+
+
+                        if ( newp.height() == 0 ) {
+                            newp.addClass('problem_noheight');
+                        }
                     }
 
 
@@ -319,7 +338,7 @@
                     $editarea.find('.currently_editing').remove();
 
                     closeEditFunc=null;
-                    updateTextArea();
+                    updatePreviewArea();
                     return false;
                 }
                 function cancelEditing() {
@@ -328,22 +347,41 @@
                     closeEditFunc=null;
                     overChild = false;
                     editingChild = false;
-                    updateTextArea();
+                    updatePreviewArea();
                     return false;
                 }
                 function deleteEditing() {
+                    var todelete = $editarea.find('.currently_editing');
+                    deleteItem( todelete );
+                    return false;
+                }
+                function deleteItem( elem ) {
+                    var todelete = jQuery( elem );
+
+                    cancelEditing();
+
+                    var editparent = todelete.parent();
                     $editarea.find('.editor_active').remove();
-                    $editarea.find('.currently_editing').unbind().remove();
+                    todelete.unbind().remove();
                     closeEditFunc=null;
                     overChild = false;
                     editingChild = false;
-                    updateTextArea();
+
+                    if ( !editparent.hasClass('editable_content') && (editparent.height() == 0 || editparent.html() == "") ) {
+                        editparent.addClass('problem_noheight');
+                    }
+                    updatePreviewArea();
+
                     return false;
                 }
+
                 function exitEditMode() {
                     if ( closeEditFunc != null ) {
-                        closeEditFunc();
-                        updateTextArea();
+                        try {
+                            closeEditFunc();
+                        } catch (error ) {
+                        }
+                        updatePreviewArea();
                     }
                     return false;
                 }
@@ -352,6 +390,268 @@
                 }
                 function replaceBreaks( htmltext ) {
                     return htmltext.replace(/(<br\s*\/?>)/ig, "\n");
+                }
+
+                function addDeleteButton( elem ) {
+                    removeDeleteButton( elem );
+                    var delbutton = jQuery('<div>X</div>').addClass('item_delete_button');
+                    delbutton.hover( function() { deleteHover=true; }, function() {deleteHover=false; });
+                    delbutton.click( function() { 
+                        deleteItem( elem );
+                    } );
+                    jQuery(elem).append( delbutton );
+                }
+                function removeDeleteButton( elem ) {
+                    $editarea.find('.item_delete_button').unbind().remove();
+                }
+
+                function addTagReference( elem ) {
+                    removeTagReference( elem );
+                    var tagref = jQuery('<div>[' + jQuery(elem).get(0).tagName + ']</div>').addClass('item_tag_reference');
+                    jQuery(elem).append( tagref );
+                }
+                function removeTagReference( elem ) {
+                    $editarea.find('.item_tag_reference').unbind().remove();
+                }
+
+                
+                function bindRawTag( elem ) {
+
+                    jQuery(elem).hover(
+                        function() { jQuery(this).addClass( 'edit_hover' ); addTagReference( this ); addDeleteButton( this ); },
+                        function() { jQuery(this).removeClass( 'edit_hover' ); removeTagReference( this ); removeDeleteButton( this ); }
+                    );
+
+                    var csscopy = [
+                        'paddingTop',
+                        'paddingRight',
+                        'paddingBottom',
+                        'paddingLeft',
+                        'fontSize',
+                        'lineHeight',
+                        'fontFamily',
+                        'fontWeight',
+                        'borderLeft',
+                        'borderRight',
+                        'borderTop',
+                        'borderBottom',
+                        'marginTop',
+                        'marginLeft',
+                        'marginRight',
+                        'marginBottom'];
+
+                    jQuery(elem).mousedown( function() {
+                        if ( editingChild || isDragging ) {
+                            return true;
+                        }
+
+                        jQuery(this).addClass('editor_dragging');
+                        return false;
+                    });
+
+                    jQuery(elem).click( function() {
+                        var $this = jQuery(this);
+
+                        if ( overChild || editingChild || isDragging ) {
+                            return; //let's ignore the click if they were doing something else at the time.
+                        }
+
+                        if ( closeEditFunc ) {
+                            closeEditFunc();
+                        }
+        
+                        removeDeleteButton( this );
+                        removeTagReference( this );
+                        
+                        var editorhtml = '<div class="editor_active"><textarea class="raw_editing"></textarea></div>';
+                        var editor = $this.after( editorhtml );
+                        $editarea.find(".raw_editing").val( $this.html() ).focus();
+                        $editarea.find(".raw_editing").css({
+                            'width': "100%",
+                            'height': "auto"
+                        });
+                        $editarea.find(".editor_active").css('min-height', $this.height() + 'px' );
+                        $editarea.find(".raw_editing_done").click( function() { return editCompleteRawTag( $this ); });
+                        $editarea.find(".raw_editing_cancel").click( function() { return cancelEditing( ); });
+                        for ( x=0; x< csscopy.length; x++ ) {
+                            $editarea.find(".raw_editing").css( csscopy[x].toString(), $this.css( csscopy[x].toString() ) );
+                        }
+                        $editarea.find(".raw_editing")
+                            .bind( 'focus', resizeTextarea )
+                            .bind( 'keyup', resizeTextarea )
+                            .bind( 'change', resizeTextarea )
+                            .each( function() { resizeTextarea( this ); } );
+                        
+                        closeEditFunc = function(){ return editCompleteRawTag( $this ); };
+                        $this.addClass('currently_editing');
+                    });
+
+
+                }
+
+                function editCompleteRawTag( elem ) {
+                    var editing = $editarea.find('.currently_editing').unbind();
+
+                    editing.find('IMG, A').each( function() {
+                            jQuery(this).unbind();
+                    });
+
+                    var newtxt = $editarea.find('.raw_editing').val();
+                    var tagname = $editarea.find('.currently_editing').get(0).tagName;
+
+                    
+                    if ( newtxt != "" ) {
+
+                        var newcontent = jQuery('<' + tagname + '>' + newtxt + '</' + tagname + '>');
+                        $editarea.find('.currently_editing').after( newcontent );
+                        bindRawTag( newcontent );
+                        newcontent.find('IMG').each( function() {
+                                bindImgTag( this );
+                                });
+                        newcontent.find('A').each( function() {
+                                bindATag( this );
+                                });
+
+                        if ( newcontent.height() == 0 ) {
+                            newcontent.addClass('problem_noheight');
+                        }
+                    }
+
+                    $editarea.find('.editor_active').remove();
+                    $editarea.find('.currently_editing').remove();
+
+                    closeEditFunc=null;
+                    updatePreviewArea();
+                    return false;
+                }
+
+
+
+                function bindListTag( elem ) {
+
+                    jQuery(elem).hover(
+                        function() { jQuery(this).addClass( 'edit_hover' ); addTagReference( this ); addDeleteButton( this ); },
+                        function() { jQuery(this).removeClass( 'edit_hover' ); removeTagReference( this ); removeDeleteButton( this ); }
+                    );
+
+                    var csscopy = [
+                        'paddingTop',
+                        'paddingRight',
+                        'paddingBottom',
+                        'paddingLeft',
+                        'fontSize',
+                        'lineHeight',
+                        'fontFamily',
+                        'fontWeight',
+                        'borderLeft',
+                        'borderRight',
+                        'borderTop',
+                        'borderBottom',
+                        'marginTop',
+                        'marginLeft',
+                        'marginRight',
+                        'marginBottom'];
+
+                    jQuery(elem).mousedown( function() {
+                        if ( editingChild || isDragging ) {
+                            return true;
+                        }
+
+                        jQuery(this).addClass('editor_dragging');
+                        return false;
+                    });
+
+                    jQuery(elem).click( function() {
+                        var $this = jQuery(this);
+
+                        if ( overChild || editingChild || isDragging ) {
+                            return; //let's ignore the click if they were doing something else at the time.
+                        }
+
+                        if ( closeEditFunc ) {
+                            closeEditFunc();
+                        }
+        
+                        removeDeleteButton( this );
+                        removeTagReference( this );
+                        
+                        var editorhtml = '<div class="editor_active"><textarea class="raw_editing"></textarea></div>';
+                        var editor = $this.after( editorhtml );
+                        var edittxt = "";
+                        $this.children("LI").each( function() {
+                            edittxt += jQuery(this).html() + "\n";
+                        });
+
+                        $editarea.find(".raw_editing").val( edittxt ).focus();
+                        $editarea.find(".raw_editing").css({
+                            'width': "100%",
+                            'height': "auto"
+                        });
+                        $editarea.find(".editor_active").css('min-height', $this.height() + 'px' );
+                        $editarea.find(".raw_editing_done").click( function() { return editCompleteListTag( $this ); });
+                        $editarea.find(".raw_editing_cancel").click( function() { return cancelEditing( ); });
+                        for ( x=0; x< csscopy.length; x++ ) {
+                            $editarea.find(".raw_editing").css( csscopy[x].toString(), $this.css( csscopy[x].toString() ) );
+                        }
+                        $editarea.find(".raw_editing")
+                            .bind( 'focus', resizeTextarea )
+                            .bind( 'keyup', resizeTextarea )
+                            .bind( 'change', resizeTextarea )
+                            .each( function() { resizeTextarea( this ); } );
+                        
+                        closeEditFunc = function(){ return editCompleteListTag( $this ); };
+                        $this.addClass('currently_editing');
+                    });
+
+
+                }
+
+
+                function editCompleteListTag( elem ) {
+                    var editing = $editarea.find('.currently_editing').unbind();
+
+                    editing.find('IMG, A').each( function() {
+                            jQuery(this).unbind();
+                    });
+
+                    var newtxt = $editarea.find('.raw_editing').val();
+                    var tagname = $editarea.find('.currently_editing').get(0).tagName;
+                    var newcontent = jQuery('<' + tagname + '/>');
+                    
+                    var items = newtxt.split(/\n/g);
+                    for ( var x=0; x<items.length; x++) {
+                        var item = items[x];
+
+                        if ( item == "" )
+                            continue;
+
+                        if ( item.match(/^s.*$/) ) {
+                            item = "&nbsp;";
+                        }
+                        var newli = jQuery('<li>' + item + '</li>');
+                        newcontent.append( newli );
+                        newli.find('IMG').each( function() {
+                                bindImgTag( this );
+                        });
+                        newli.find('A').each( function() {
+                                bindATag( this );
+                        });
+
+
+                    }
+
+                    $editarea.find('.currently_editing').after( newcontent );
+                    bindListTag( newcontent );
+                    if ( newcontent.height() == 0 ) {
+                        newcontent.addClass('problem_noheight');
+                    }
+
+                    $editarea.find('.editor_active').remove();
+                    $editarea.find('.currently_editing').remove();
+
+                    closeEditFunc=null;
+                    updatePreviewArea();
+                    return false;
                 }
 
 
@@ -366,11 +666,15 @@
                                 if ( !jQuery(this).parent().hasClass( 'editable_content' ) ) {
                                     overChild = true;
                                 }
+                                else {
+                                }
                             },
                             function() {
                                 jQuery(this).removeClass( 'edit_hover' );
                                 if ( !jQuery(this).parent().hasClass( 'editable_content' ) ) {
                                     overChild = false;
+                                }
+                                else {
                                 }
                             }
                     );
@@ -476,7 +780,7 @@
                     $editarea.find('.editor_active').remove();
                     closeEditFunc=null;
                     editingChild = false;
-                    updateTextArea();
+                    updatePreviewArea();
                     return false;
                 }
 
@@ -493,11 +797,15 @@
                                 if ( !jQuery(this).parent().hasClass( 'editable_content' ) ) {
                                     overChild = true;
                                 }
+                                else {
+                                }
                             },
                             function() {
                                 jQuery(this).removeClass( 'edit_hover' );
                                 if ( !jQuery(this).parent().hasClass( 'editable_content' ) ) {
                                     overChild = false;
+                                }
+                                else {
                                 }
                             }
                     );
@@ -565,7 +873,7 @@
                     $editarea.find('.editor_active').remove();
                     closeEditFunc=null;
                     editingChild = false;
-                    updateTextArea();
+                    updatePreviewArea();
                     return false;
                 }
 
@@ -573,7 +881,7 @@
 
 
            
-                function updateTextArea() {
+                function updatePreviewArea() {
                      var $newhtml = jQuery('<div />');
                      $newhtml.html( $editarea.html() );
                      $newhtml.find('.edit_hover').removeClass('edit_hover');
@@ -597,9 +905,13 @@
                 'target': null,
                 'plipsum': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed posuere, justo egestas fermentum viverra, dolor lorem imperdiet diam, vel auctor diam tellus vitae nulla. Aenean ut quam vitae odio bibendum adipiscing. Aenean ut purus enim, in lacinia nisl.',
                 'hlipsum': 'Lorem ipsum dolor sit amet',
-                'imglipsum': '<img src="assets/images/test.jpg" width="350" />',
+                'imglipsum': '<img src="assets/images/test.jpg"/>',
                 'alipsum': '<a href="#">Lorem ipsum dolor sit amet</a> ',
-                'enable': ['p','h1','h2','h3','img','a']
+                'divlipsum': '<div>Raw HTML Here</div>',
+                'ullipsum': '<ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>',
+                'enable': ['p','h1','h2','h3','img','a','div'],
+                'default_img_width': '350',
+                'default_img_height': ''
             };
 
             return this.each( function() {
@@ -636,10 +948,21 @@
                             $tools.append( generateTextTool( $textarea, 'h3', 'H3', settings['hlipsum'] ) ).append('&nbsp;');
                             break;
                         case 'img':
-                            $tools.append( generateRawTool( $textarea, 'img', 'IMG', settings['imglipsum'] ) ).append('&nbsp;');
+                            var newimg = jQuery( settings['imglipsum'] );
+                            if ( settings['default_img_width'] != "" ) newimg.attr('width', settings['default_img_width']);
+                            if ( settings['default_img_height'] != "" ) newimg.attr('height', settings['default_img_height']);
+                            var wrapper = jQuery('<div/>');
+                            wrapper.append( newimg );
+                            $tools.append( generateRawTool( $textarea, 'img', 'IMG', wrapper.html() ) ).append('&nbsp;');
                             break;
                         case 'a':
                             $tools.append( generateRawTool( $textarea, 'a', 'A', settings['alipsum'] ) ).append('&nbsp;');
+                            break;
+                        case 'div':
+                            $tools.append( generateRawTool( $textarea, 'div', 'DIV', settings['divlipsum'] ) ).append('&nbsp;');
+                            break;
+                        case 'ul':
+                            $tools.append( generateRawTool( $textarea, 'ul', 'UL', settings['ullipsum'] ) ).append('&nbsp;');
                             break;
                     }
                 }
@@ -705,9 +1028,15 @@
                 
 
                 var $newcontent = jQuery(settings['content']);
-                var openEditor = $editarea.find('.txt_editing');
-                if ( ($newcontent.get(0).tagName == 'IMG' || $newcontent.get(0).tagName == 'A' ) && openEditor.get(0) != null ) {
-                    
+                var openTextEditor = $editarea.find('.txt_editing');
+                var openRawEditor = $editarea.find('.raw_editing');
+                if ( 
+                    ($newcontent.get(0).tagName == 'IMG' || $newcontent.get(0).tagName == 'A' ) && (openTextEditor.get(0) != null || openRawEditor.get(0) != null) ||
+                    ($newcontent.get(0).tagName == 'P') && (openRawEditor.get(0) != null) 
+                    ) {
+                   
+                    var openEditor = openTextEditor.get(0) ? openTextEditor : openRawEditor;
+
                     var caretpos = getSelection( openEditor ).start;
                     var val = openEditor.val();
                     
@@ -716,11 +1045,11 @@
                     exitEditMode();
 
                 } else {
-                    $editarea.prepend( $newcontent );
+                    $editarea.append( $newcontent );
                     var bindElement = data['bindElement'];
                     bindElement( $newcontent );
-                    var updateTextArea = data['updateTextArea'];
-                    updateTextArea( );
+                    var updatePreviewArea = data['updatePreviewArea'];
+                    updatePreviewArea( );
                 }
 
 

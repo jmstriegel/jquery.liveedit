@@ -9,12 +9,13 @@
 .editable_content IMG {
 }
 
-P.edit_hover, H2.edit_hover, H1.edit_hover, H3.edit_hover, H4.edit_hover, A.edit_hover {
+P.edit_hover, H2.edit_hover, H1.edit_hover, H3.edit_hover, H4.edit_hover, A.edit_hover, DIV.edit_hover, UL.edit_hover, OL.edit_hover {
 	-webkit-box-shadow:  0px 0px 5px 5px rgba(0,0,0,.1);
 	-moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,.1);
 	box-shadow: 0px 0px 5px 5px rgba(0,0,0,.1);
+    position:relative;
 }
-P.currently_editing, H1.currently_editing, H2.currently_editing, H3.currently_editing, H4.currently_editing, IMG.currently_editing, A.currently_editing {
+P.currently_editing, H1.currently_editing, H2.currently_editing, H3.currently_editing, H4.currently_editing, IMG.currently_editing, A.currently_editing, DIV.currently_editing, UL.currently_editing, OL.currently_editing {
 	display:none;
 }
 
@@ -46,8 +47,39 @@ IMG.edit_hover {
 	position:absolute;
 }
 
-.problem_image {
+.problem_image, .problem_noheight {
     border: 5px solid red;
+}
+
+.item_delete_button {
+    position:absolute;
+    right: -48px;
+    padding-left:8px;
+    top: 0px;
+    width: 40px;
+    text-align: left;
+    cursor: pointer;
+    line-height: 12px;
+    height: 30px;
+    font-family: helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: normal;
+    opacity: .8;
+}
+.item_tag_reference {
+    position:absolute;
+    left: -44px;
+    padding-right: 4px;
+    top: 2px;
+    width: 40px;
+    text-align: right;
+    line-height: 10px;
+    margin: 0;
+    padding: 0;
+    font-family: helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: normal;
+    opacity: .8;
 }
 
 .img_preview_editing {

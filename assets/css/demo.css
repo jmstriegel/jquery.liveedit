@@ -13,7 +13,7 @@ h1,h2,h3,p,div,img {
 
 body {
 	background-color: #aaccff;
-	font-family: helvetica, sans;
+	font-family: helvetica, sans-serif;
 	color: #333333;
 }
 
@@ -46,4 +46,13 @@ h3 {
 p {
 	font-size: 12px;
 	margin: 5px 0;
+}
+
+#edittools1 a {
+    font-family: helvetica, sans-serif;
+    font-weight: normal;
+    color: #444;
+    font-size: 14px;
+    text-decoration:none;
+    margin-right:5px;
 }
