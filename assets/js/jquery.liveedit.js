@@ -119,7 +119,7 @@
 
                         var placeholder = $editarea.children('.editor_dragplaceholder').first();
                         if (!( placeholder && placeholder.get(0)) ) {
-                            $(dragging).before( jQuery('<div class="editor_dragplaceholder" />'));
+                            jQuery(dragging).before( jQuery('<div class="editor_dragplaceholder" />'));
 
                             placeholder = $editarea.children('.editor_dragplaceholder').first();
                             placeholder.css({
