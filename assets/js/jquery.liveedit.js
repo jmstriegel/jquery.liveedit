@@ -882,13 +882,23 @@
 
            
                 function updatePreviewArea() {
-                     var $newhtml = jQuery('<div />');
-                     $newhtml.html( $editarea.html() );
-                     $newhtml.find('.edit_hover').removeClass('edit_hover');
-                     $newhtml.find('.editor_dragging').removeClass('editor_dragging');
-                     $newhtml.find('*[class=""]').removeAttr('class');
-                     $newhtml.find('*[style=""]').removeAttr('style');
-                     $textarea.val( $newhtml.html() );
+                    var before = $textarea.val();
+                    
+
+                    var $newhtml = jQuery('<div />');
+                    $newhtml.html( $editarea.html() );
+                    //let's make sure we don't have extraneous content in the markup 
+                    $newhtml.find('.item_tag_reference').remove();
+                    $newhtml.find('.item_delete_button').remove();
+                    $newhtml.find('.edit_hover').removeClass('edit_hover');
+                    $newhtml.find('.editor_dragging').removeClass('editor_dragging');
+                    $newhtml.find('*[class=""]').removeAttr('class');
+                    $newhtml.find('*[style=""]').removeAttr('style');
+                    $textarea.val( $newhtml.html() );
+
+                    if ( $textarea.val() != before ) {
+                        $textarea.change();
+                    }
                 }
 
 
