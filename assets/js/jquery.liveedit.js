@@ -262,6 +262,7 @@
                             .bind( 'focus', resizeTextarea )
                             .bind( 'keyup', resizeTextarea )
                             .bind( 'change', resizeTextarea )
+                            .bind( 'focusout', function() { exitEditMode(); }  )
                             .each( function() { resizeTextarea( this ); } );
                         
                         closeEditFunc = function(){ return editCompleteTextTag( $this ); };
@@ -480,6 +481,7 @@
                             .bind( 'focus', resizeTextarea )
                             .bind( 'keyup', resizeTextarea )
                             .bind( 'change', resizeTextarea )
+                            .bind( 'focusout', function() { exitEditMode(); }  )
                             .each( function() { resizeTextarea( this ); } );
                         
                         closeEditFunc = function(){ return editCompleteRawTag( $this ); };
@@ -597,6 +599,7 @@
                             .bind( 'focus', resizeTextarea )
                             .bind( 'keyup', resizeTextarea )
                             .bind( 'change', resizeTextarea )
+                            .bind( 'focusout', function() { exitEditMode(); }  )
                             .each( function() { resizeTextarea( this ); } );
                         
                         closeEditFunc = function(){ return editCompleteListTag( $this ); };
@@ -897,7 +900,8 @@
                     $textarea.val( $newhtml.html() );
 
                     if ( $textarea.val() != before ) {
-                        $textarea.change();
+                        //fire this event outside of current event. ensures that it will fire.
+                        setTimeout( function() { $textarea.change(); }, 1 );
                     }
                 }
 
