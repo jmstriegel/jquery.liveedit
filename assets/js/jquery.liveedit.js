@@ -7,7 +7,8 @@
         init: function( options ) {
 
             var settings = {
-                'hidetextarea' : true
+                'hidetextarea' : true,
+                'fixedcontent' : false
             }
 
             return this.each( function() {
@@ -205,6 +206,7 @@
                     );
 
                     var csscopy = [
+                        'color',
                         'paddingTop',
                         'paddingRight',
                         'paddingBottom',
@@ -223,7 +225,7 @@
                         'marginBottom'];
 
                     jQuery(elem).mousedown( function() {
-                        if ( editingChild || isDragging ) {
+                        if ( editingChild || isDragging || settings['fixedcontent'] == true ) {
                             return true;
                         }
 
@@ -249,7 +251,7 @@
                         var editor = $this.after( editorhtml );
                         $editarea.find(".txt_editing").val( replaceBreaks( $this.html()) ).focus();
                         $editarea.find(".txt_editing").css({
-                            'width': "100%",
+                            'width': ($this.width() + 2) + 'px',
                             'height': "auto"
                         });
                         $editarea.find(".editor_active").css('min-height', $this.height() + 'px' );
@@ -307,18 +309,26 @@
                     var newtxt = $editarea.find('.txt_editing').val();
                     var tagname = $editarea.find('.currently_editing').get(0).tagName;
 
-                    var paragraphs = newtxt.split(/\n\n/g);
+                    var paragraphs=[];
+                    
+                    if ( !settings['fixedcontent'] ) {
+                        paragraphs = newtxt.split(/\n\n/g);
+                    } else {
+                        paragraphs[0] = newtxt;
+                    }
+                    
                     for ( var x=paragraphs.length-1 ; x>=0; x-- ) {
                         paragraph = paragraphs[x];
-                        if ( paragraph == "" )
+                        if ( !settings['fixedcontent'] && paragraph == "" )
                             continue;
 
 
-                        if ( paragraph.match(/^s.*$/) ) {
+                        if ( paragraph.match(/^\s*$/) && !settings['fixedcontent'] ) {
                             paragraph = "&nbsp;";
                         }
                         paragraph = formatBreaks( paragraph );
-                        var newp = jQuery('<' + tagname + '>' + paragraph + '</' + tagname + '>');
+                        var newp = jQuery('<' + tagname + ' />');
+                        newp.html( paragraph );
                         $editarea.find('.currently_editing').after( newp );
                         bindTextTag( newp );
                         newp.find('IMG').each( function() {
@@ -394,22 +404,27 @@
                 }
 
                 function addDeleteButton( elem ) {
-                    removeDeleteButton( elem );
-                    var delbutton = jQuery('<div>X</div>').addClass('item_delete_button');
-                    delbutton.hover( function() { deleteHover=true; }, function() {deleteHover=false; });
-                    delbutton.click( function() { 
-                        deleteItem( elem );
-                    } );
-                    jQuery(elem).append( delbutton );
+                    if ( !settings['fixedcontent'] ) {
+                        removeDeleteButton( elem );
+                        var delbutton = jQuery('<div>X</div>').addClass('item_delete_button');
+                        delbutton.hover( function() { deleteHover=true; }, function() {deleteHover=false; });
+                        delbutton.click( function() { 
+                            deleteItem( elem );
+                        } );
+                        jQuery(elem).append( delbutton );
+                    }
                 }
                 function removeDeleteButton( elem ) {
                     $editarea.find('.item_delete_button').unbind().remove();
                 }
 
                 function addTagReference( elem ) {
-                    removeTagReference( elem );
-                    var tagref = jQuery('<div>[' + jQuery(elem).get(0).tagName + ']</div>').addClass('item_tag_reference');
-                    jQuery(elem).append( tagref );
+                    if ( !settings['fixedcontent'] ) {
+
+                        removeTagReference( elem );
+                        var tagref = jQuery('<div>[' + jQuery(elem).get(0).tagName + ']</div>').addClass('item_tag_reference');
+                        jQuery(elem).append( tagref );
+                    }
                 }
                 function removeTagReference( elem ) {
                     $editarea.find('.item_tag_reference').unbind().remove();
@@ -442,7 +457,7 @@
                         'marginBottom'];
 
                     jQuery(elem).mousedown( function() {
-                        if ( editingChild || isDragging ) {
+                        if ( editingChild || isDragging || settings['fixedcontent'] == true ) {
                             return true;
                         }
 
@@ -502,7 +517,7 @@
                     var tagname = $editarea.find('.currently_editing').get(0).tagName;
 
                     
-                    if ( newtxt != "" ) {
+                    if ( newtxt != "" || settings['fixedcontent'] ) {
 
                         var newcontent = jQuery('<' + tagname + '>' + newtxt + '</' + tagname + '>');
                         $editarea.find('.currently_editing').after( newcontent );
