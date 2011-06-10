@@ -8,7 +8,9 @@
 
             var settings = {
                 'hidetextarea' : true,
-                'fixedcontent' : false
+                'fixedcontent' : false,
+                'assetupload' : 'modules/php.assetupload/assetupload.php',
+                'img_resize_width' : ''
             }
 
             return this.each( function() {
@@ -723,9 +725,41 @@
                                 editingChild = true;
                             }
 
-                            var editorhtml = '<div class="editor_active" ><img class="img_preview_editing" /><div class="img_edit_box"><a href="" class="editing_done">Done</a> <a href="" class="editing_cancel">Cancel</a> <a href="" class="editing_delete">Delete</a><br />Src: <input class="img_src_editing"><br />Width: <input class="img_width_editing"> Height: <input class="img_height_editing"></div></div>';
+                            var editorhtml = '<div class="editor_active" ><img class="img_preview_editing" /><div class="img_edit_box"><a href="" class="editing_done">Done</a> <a href="" class="editing_cancel">Cancel</a> <a href="" class="editing_delete">Delete</a><br />Src: <input type="text" class="img_src_editing"><br />';
+                            if ( settings['assetupload'] != '' ) {
+                                editorhtml += '<form method="post" enctype="multipart/form-data" id="img_attach">Upload: <input type="file" name="fileupload"></form><span class="uploadstatus"></span><br />';
+                            }
+                            editorhtml += 'Width: <input type="text" class="img_width_editing"> Height: <input type="text" class="img_height_editing"></div></div>';
+                            
                             var $editor = jQuery( editorhtml );
+
+                            var attachment_options = {
+                                beforeSubmit: function( data ) {
+                                    $editor.find('.uploadstatus').html( 'Loading...' );
+                                },
+                                success: function( data ) { 
+                                    var parsed = $.parseJSON(data);
+                                    var imgreg = /(\.jpg|\.jpeg|\.gif|\.png)$/i;
+                                    if ( parsed['name'] && imgreg.test(parsed['name']) ) {
+                                        $editor.find('.uploadstatus').html( '' );
+                                        $editor.find('.img_src_editing').val(  parsed['path'] + parsed['name'] );
+                                        $editor.find('.img_width_editing').val( '' );
+                                        $editor.find('.img_height_editing').val( '' );
+                                        adjpreview();
+                                    } 
+                                },
+                                url: settings['assetupload']
+                            };
+                            
+
                             $this.after( $editor );
+
+                            $('#img_attach').ajaxForm( attachment_options );
+                            $('#img_attach input[name="fileupload"]').change( function() {
+                                $('#img_attach').submit();
+                                return false;
+                            });
+
 
                             $editor.find(".img_src_editing").val( $this.attr('src') );
                             $editor.find(".img_width_editing").val( $this.attr('width') );
