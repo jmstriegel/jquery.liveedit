@@ -754,9 +754,9 @@
 
                             $this.after( $editor );
 
-                            $('#img_attach').ajaxForm( attachment_options );
-                            $('#img_attach input[name="fileupload"]').change( function() {
-                                $('#img_attach').submit();
+                            jQuery('#img_attach').ajaxForm( attachment_options );
+                            jQuery('#img_attach input[name="fileupload"]').change( function() {
+                                jQuery('#img_attach').submit();
                                 return false;
                             });
 
