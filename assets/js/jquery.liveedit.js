@@ -9,6 +9,7 @@
             var settings = {
                 'hidetextarea' : true,
                 'fixedcontent' : false,
+                'splitparagraphs' : false,
                 'assetupload' : 'modules/php.assetupload/assetupload.php',
                 'img_resize_width' : ''
             }
@@ -315,7 +316,7 @@
 
                     var paragraphs=[];
                     
-                    if ( !settings['fixedcontent'] ) {
+                    if ( settings['splitparagraphs'] && !settings['fixedcontent'] ) {
                         paragraphs = newtxt.split(/\n\n/g);
                     } else {
                         paragraphs[0] = newtxt;
