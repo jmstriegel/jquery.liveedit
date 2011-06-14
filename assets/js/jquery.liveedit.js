@@ -290,12 +290,14 @@
                     // find content length and box width  
                     var vlen = e.value.length, ewidth = e.offsetWidth;  
                     if (vlen != e.valLength || ewidth != e.boxWidth) {  
-                        if (hCheck && (vlen < e.valLength || ewidth != e.boxWidth)) e.style.height = "0px";  
-                        var h = e.scrollHeight;  
-                        e.style.overflow = (e.scrollHeight > h ? "auto" : "hidden");  
+                        //if (hCheck && (vlen < e.valLength || ewidth != e.boxWidth)) e.style.height = "0px";  
+                        e.style.height = '0px';
+                        var h = e.scrollHeight;
+                        //var h = Math.max(e.expandMin, Math.min(e.scrollHeight, e.expandMax));
+                        e.style.overflow = (e.scrollHeight > h ? "auto" : "hidden"); 
                         e.style.height = h + "px";  
                         e.valLength = vlen;  
-                        e.boxWidth = ewidth;  
+                        e.boxWidth = ewidth; 
                     }  
                     return true;  
                 }  
