@@ -728,11 +728,11 @@
                                 editingChild = true;
                             }
 
-                            var editorhtml = '<div class="editor_active" ><img class="img_preview_editing" /><div class="img_edit_box"><a href="" class="editing_done">Done</a> <a href="" class="editing_cancel">Cancel</a> <a href="" class="editing_delete">Delete</a><br />Src: <input type="text" class="img_src_editing"><br />';
+                            var editorhtml = '<div class="editor_active" ><img class="img_preview_editing" /><div class="img_edit_box"><a href="" class="editing_done">Done</a> <a href="" class="editing_cancel">Cancel</a> <a href="" class="editing_delete">Delete</a><br /><label>Src:</label><input type="text" class="img_src_editing"><br />';
                             if ( settings['assetupload'] != '' ) {
-                                editorhtml += '<form method="post" enctype="multipart/form-data" id="img_attach">Upload: <input type="file" name="fileupload"></form><span class="uploadstatus"></span><br />';
+                                editorhtml += '<form method="post" enctype="multipart/form-data" id="img_attach"><label>Upload:</label><input type="file" name="fileupload"></form><span class="uploadstatus"></span><br />';
                             }
-                            editorhtml += 'Width: <input type="text" class="img_width_editing"> Height: <input type="text" class="img_height_editing"></div></div>';
+                            editorhtml += '<label>Width:</label><input type="text" class="img_width_editing"> <label>Height:</label><input type="text" class="img_height_editing"></div></div>';
                             
                             var $editor = jQuery( editorhtml );
 
@@ -891,7 +891,7 @@
                                 editingChild = true;
                             }
 
-                            var editorhtml = '<div class="editor_active" ><div class="a_edit_box"><a href="" class="editing_done">Done</a> <a href="" class="editing_cancel">Cancel</a> <a href="" class="editing_delete">Delete</a><br />URL: <input class="a_url_editing"><br />Anchor Text: <input class="a_text_editing">';
+                            var editorhtml = '<div class="editor_active" ><div class="a_edit_box"><a href="" class="editing_done">Done</a> <a href="" class="editing_cancel">Cancel</a> <a href="" class="editing_delete">Delete</a><br /><label>URL:</label><input class="a_url_editing"><br /><label>Anchor Text:</label><input class="a_text_editing">';
                             var $editor = jQuery( editorhtml );
                             $this.after( $editor );
 

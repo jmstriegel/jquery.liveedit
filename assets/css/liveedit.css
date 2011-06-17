@@ -111,6 +111,15 @@ IMG.edit_hover {
     width: 50px;
     margin-right: 10px;
 }
+.editor_active label {
+    width: 100px;
+    text-align:right;
+    margin-right:10px;
+    display: inline-block;
+}
+.editor_active input[type="file"] {
+    height: 27px;
+}
 
 .editor_dragplaceholder {
     display: block;
